@@ -4,6 +4,10 @@
 
 演示： https://v2.ytvd.cc/
 
+
+用这个插件获取YouTube的cookis 
+https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc
+
 ## 功能特性
 
 - 🎬 解析视频信息，选择分辨率格式下载
