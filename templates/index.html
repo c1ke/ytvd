@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>YTVD</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+/* ── DARK: pure black + amber ── */
+[data-theme="dark"]{
+  --bg:#000;--bg2:#0a0a0a;--bg3:#141414;--card:#111;--brd:#222;
+  --a:#f5a623;--a2:#f7c26b;
+  --tx:#f0f0f0;--tx2:#666;
+  --font:'Inter',sans-serif;
+  --glow:0 0 0 1px rgba(245,166,35,.3);
+  --radius:10px;
+}
+/* ── LIGHT: warm white + amber ── */
+[data-theme="light"]{
+  --bg:#faf8f4;--bg2:#f5f0e8;--bg3:#ede8de;--card:#fff;--brd:#e0d8cc;
+  --a:#c8830a;--a2:#e09820;
+  --tx:#1a1510;--tx2:#8a7a68;
+  --font:'Inter',sans-serif;
+  --glow:0 0 0 1px rgba(200,131,10,.25);
+  --radius:10px;
+}
+
+body{background:var(--bg);color:var(--tx);font-family:var(--font);min-height:100vh;transition:background .25s,color .25s;font-size:15px;line-height:1.6}
+a{color:var(--a);text-decoration:none}
+input,textarea,select{background:var(--bg3);border:1px solid var(--brd);color:var(--tx);font-family:var(--font);border-radius:var(--radius);padding:.6rem .9rem;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;font-size:.9rem}
+input:focus,textarea:focus{border-color:var(--a);box-shadow:var(--glow)}
+button{cursor:pointer;font-family:var(--font);border:none;border-radius:var(--radius);transition:all .18s}
+
+/* layout */
+.site{display:flex;flex-direction:column;min-height:100vh}
+.wrap{flex:1;max-width:1100px;margin:0 auto;width:100%;padding:2rem 1.5rem}
+
+/* header */
+.hdr{background:var(--bg2);border-bottom:1px solid var(--brd);padding:.85rem 1.5rem;position:sticky;top:0;z-index:100}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.logo{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--tx);cursor:pointer;user-select:none;letter-spacing:-.02em}
+.logo span{color:var(--a)}
+.nav{display:flex;gap:.2rem}
+.nb{background:transparent;color:var(--tx2);padding:.38rem .8rem;font-size:.84rem;border:1px solid transparent;border-radius:8px}
+.nb:hover,.nb.on{background:var(--bg3);color:var(--tx);border-color:var(--brd)}
+.flinks-hdr{display:flex;gap:.35rem;flex-wrap:wrap}
+.ftag{background:var(--bg3);border:1px solid var(--brd);color:var(--tx2);padding:.22rem .6rem;border-radius:100px;font-size:.76rem}
+.ftag:hover{color:var(--a);border-color:var(--a)}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:.75rem}
+
+/* theme toggle */
+.theme-toggle{display:flex;align-items:center;gap:.4rem;background:var(--bg3);border:1px solid var(--brd);border-radius:100px;padding:.28rem .5rem;cursor:pointer}
+.theme-toggle span{font-size:.8rem;color:var(--tx2)}
+.theme-toggle .active{color:var(--a);font-weight:600}
+.tgl-dot{width:18px;height:18px;border-radius:50%;background:var(--a);transition:all .2s}
+
+.lsel{background:var(--bg3);color:var(--tx);border:1px solid var(--brd);border-radius:8px;padding:.3rem .5rem;font-size:.78rem;cursor:pointer}
+
+/* ad zone */
+.adz{width:100%;text-align:center;padding:.35rem 1.5rem}
+.adz:empty{display:none}
+.adz-inner{border:1px dashed var(--brd);border-radius:var(--radius);padding:.6rem;text-align:center;font-size:.72rem;color:var(--tx2);text-transform:uppercase;letter-spacing:.08em}
+
+/* buttons */
+.bp{background:var(--a);color:#000;font-weight:600;padding:.62rem 1.3rem;font-size:.88rem;letter-spacing:.01em}
+.bp:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.bp:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.bd{background:#c0392b;color:#fff;font-weight:500;padding:.4rem .85rem;font-size:.8rem;border-radius:8px}
+.bd:hover{background:#a93226}
+.bg{background:transparent;border:1px solid var(--brd);color:var(--tx2);padding:.4rem .85rem;font-size:.8rem;border-radius:8px}
+.bg:hover{border-color:var(--a);color:var(--a)}
+.bsm{padding:.3rem .65rem!important;font-size:.76rem!important}
+
+/* card */
+.card{background:var(--card);border:1px solid var(--brd);border-radius:calc(var(--radius)*1.4);padding:1.4rem;transition:border-color .2s}
+.card:hover{border-color:color-mix(in srgb,var(--a) 40%,var(--brd))}
+
+/* downloader */
+.url-row{display:flex;gap:.6rem;align-items:stretch}
+.url-row input{font-size:.95rem;padding:.72rem 1rem}
+.url-row button{white-space:nowrap;flex-shrink:0}
+.preview{display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:1.3rem}
+.thumb{width:196px;flex-shrink:0;border-radius:8px;overflow:hidden;position:relative;background:var(--bg3)}
+.thumb img{width:100%;display:block}
+.dur{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.85);color:#fff;font-size:.7rem;padding:.18rem .42rem;border-radius:4px}
+.vinfo{flex:1;min-width:200px}
+.vtitle{font-size:1.05rem;font-weight:600;line-height:1.35;margin-bottom:.3rem;color:var(--tx)}
+.vmeta{color:var(--tx2);font-size:.82rem;margin-bottom:.85rem}
+.tabs{display:flex;border-bottom:1px solid var(--brd);margin-bottom:.85rem}
+.tb{background:transparent;border:none;border-bottom:2px solid transparent;color:var(--tx2);padding:.45rem .95rem;font-size:.84rem;font-family:var(--font);cursor:pointer;font-weight:500;transition:all .18s}
+.tb.on{color:var(--a);border-bottom-color:var(--a)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:.4rem;margin:.55rem 0 .9rem}
+.fi{background:var(--bg2);border:1px solid var(--brd);border-radius:8px;padding:.5rem .7rem;cursor:pointer;transition:all .14s;font-size:.78rem}
+.fi:hover{border-color:var(--a)}
+.fi.sel{border-color:var(--a);background:color-mix(in srgb,var(--a) 10%,transparent)}
+.fres{font-weight:600;font-size:.86rem;color:var(--tx)}
+.fext{color:var(--tx2);font-size:.72rem}
+.fi.sel .fres{color:var(--a)}
+
+/* progress */
+.prog-outer{height:5px;background:var(--bg3);border-radius:100px;overflow:hidden}
+.prog-inner{height:100%;background:var(--a);border-radius:100px;transition:width .3s ease}
+.prog-lbl{display:flex;justify-content:space-between;font-size:.76rem;color:var(--tx2);margin-top:.3rem}
+.badge{display:inline-flex;align-items:center;gap:.28rem;padding:.24rem .7rem;border-radius:100px;font-size:.75rem;font-weight:600}
+.b-done{background:color-mix(in srgb,#27ae60 15%,transparent);color:#27ae60}
+.b-err{background:color-mix(in srgb,#c0392b 15%,transparent);color:#c0392b}
+.b-dl{background:color-mix(in srgb,var(--a) 15%,transparent);color:var(--a)}
+@keyframes blink{50%{opacity:.3}}
+.b-dl::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--a);animation:blink .8s infinite}
+
+/* file table */
+.ftbl{width:100%;border-collapse:collapse;font-size:.84rem}
+.ftbl th{text-align:left;padding:.5rem .7rem;border-bottom:1px solid var(--brd);color:var(--tx2);font-weight:500;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em}
+.ftbl td{padding:.5rem .7rem;border-bottom:1px solid var(--brd)}
+.ftbl tr:hover td{background:var(--bg2)}
+.fname{font-family:monospace;color:var(--a);word-break:break-all;font-size:.8rem}
+.fsz{color:var(--tx2);white-space:nowrap}
+.fact{display:flex;gap:.35rem;white-space:nowrap}
+
+/* admin */
+.agrid{display:grid;grid-template-columns:190px 1fr;gap:1.4rem;align-items:start}
+.anav{display:flex;flex-direction:column;gap:.15rem}
+.anb{background:transparent;border:1px solid transparent;color:var(--tx2);text-align:left;padding:.55rem .9rem;border-radius:8px;font-size:.83rem;font-family:var(--font);cursor:pointer;transition:all .18s;width:100%}
+.anb:hover,.anb.on{background:var(--bg3);color:var(--tx);border-color:var(--brd)}
+.anb.on{color:var(--a)}
+.apanel{display:none}.apanel.on{display:block}
+.stitle{font-size:.8rem;font-weight:600;color:var(--a);margin-bottom:1rem;padding-bottom:.4rem;border-bottom:1px solid var(--brd);text-transform:uppercase;letter-spacing:.07em}
+.frow{margin-bottom:1rem}
+.flbl{display:block;font-size:.77rem;color:var(--tx2);margin-bottom:.35rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.fhint{font-size:.72rem;color:var(--tx2);margin-top:.25rem}
+.rgroup{display:flex;gap:1.2rem}
+.rgroup label{display:flex;gap:.4rem;align-items:center;cursor:pointer;font-size:.86rem}
+.rgroup input[type=radio]{width:auto;accent-color:var(--a)}
+.ckrow{display:flex;gap:.4rem;align-items:center;cursor:pointer;font-size:.88rem}
+.ckrow input{width:auto;accent-color:var(--a)}
+.link-row{display:flex;gap:.45rem;margin-bottom:.4rem;align-items:center}
+.link-row input:first-child{max-width:138px}
+.grad-prev{height:26px;border-radius:6px;margin-top:.35rem;transition:background .3s}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:.5rem}
+.sh h2{font-size:1.2rem;font-weight:600;color:var(--tx)}
+.sh h2 em{color:var(--a);font-style:normal}
+
+/* login modal */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s}
+.mask.show{opacity:1;pointer-events:all}
+.modal{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:2rem 2.2rem;width:100%;max-width:360px;box-shadow:0 32px 80px rgba(0,0,0,.6);transform:translateY(14px) scale(.98);transition:transform .22s}
+.mask.show .modal{transform:none}
+.modal-logo{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--tx);margin-bottom:1.4rem;display:block}
+.modal-logo span{color:var(--a)}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:2.8rem}
+.eye{position:absolute;right:.72rem;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--tx2);cursor:pointer;font-size:.9rem;padding:.2rem;border-radius:4px;width:auto}
+.eye:hover{color:var(--a)}
+.merr{color:#e74c3c;font-size:.8rem;margin-top:.42rem;min-height:1.1rem}
+.demo-hint{font-size:.74rem;color:var(--tx2);text-align:center;margin-top:.85rem}
+.demo-hint strong{color:var(--a)}
+
+/* footer */
+.ftr{background:var(--bg2);border-top:1px solid var(--brd);padding:.9rem 1.5rem;margin-top:2rem}
+.ftr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.ftr-links{display:flex;gap:.6rem;flex-wrap:wrap}
+.ftr-links a{color:var(--tx2);font-size:.78rem}.ftr-links a:hover{color:var(--a)}
+.ftr-copy{color:var(--tx2);font-size:.75rem}
+
+/* empty */
+.empty{text-align:center;padding:3rem;color:var(--tx2)}
+.empty-ico{font-size:2.5rem;margin-bottom:.7rem;opacity:.3}
+
+/* toast */
+.toast{position:fixed;bottom:1.8rem;right:1.8rem;background:var(--a);color:#000;padding:.65rem 1.3rem;border-radius:8px;font-weight:600;font-size:.83rem;z-index:999;transform:translateY(10px);opacity:0;transition:all .25s;pointer-events:none}
+.toast.show{transform:none;opacity:1}
+
+/* spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{width:14px;height:14px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .5s linear infinite;display:inline-block;vertical-align:middle}
+
+@media(max-width:700px){.agrid{grid-template-columns:1fr}.anav{flex-direction:row;flex-wrap:wrap}.preview{flex-direction:column}.thumb{width:100%}}
+</style>
+</head>
+<body data-theme="dark">
+<div id="app">
+<div class="site">
+
+  <!-- LOGIN MODAL -->
+  <div class="mask" :class="{show:showLogin}">
+    <div class="modal">
+      <span class="modal-logo">YTVD</span>
+      <div class="frow">
+        <label class="flbl">Password</label>
+        <div class="pw-wrap">
+          <input :type="showPw?'text':'password'" v-model="loginPw" @keydown.enter="doLogin" placeholder="Enter password…"/>
+          <button class="eye" @click="showPw=!showPw">{{showPw?'🙈':'👁'}}</button>
+        </div>
+        <div class="merr">{{loginErr}}</div>
+      </div>
+      <button class="bp" style="width:100%" @click="doLogin" :disabled="loginLoading">
+        <span v-if="loginLoading" class="spin"></span>
+        <span v-else>Login</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="hdr">
+    <div class="hdr-in">
+      <div class="logo" @click="goTo('home')">YTVD</div>
+      <nav class="nav">
+        <button class="nb" :class="{on:page==='home'}" @click="goTo('home')">⬇ Download</button>
+        <button class="nb" :class="{on:page==='files'}" @click="goTo('files')">📁 Files</button>
+        <button class="nb" :class="{on:page==='admin'}" @click="goTo('admin')">⚙ Admin</button>
+      </nav>
+      <div class="flinks-hdr" v-if="settings.links&&settings.links.length">
+        <a class="ftag" v-for="l in settings.links" :href="l.url" target="_blank">{{l.name}}</a>
+      </div>
+      <div class="hdr-r">
+        <!-- Theme toggle -->
+        <div class="theme-toggle" @click="toggleTheme">
+          <span :class="{active:currentTheme==='dark'}">🌙</span>
+          <span :class="{active:currentTheme==='light'}">☀️</span>
+        </div>
+        <select class="lsel" v-model="lang">
+          <option value="en">EN</option>
+          <option value="zh">中文</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="fr">FR</option>
+          <option value="de">DE</option>
+          <option value="es">ES</option>
+          <option value="ru">RU</option>
+        </select>
+        <button class="bg bsm" v-if="isAdmin" @click="doLogout" style="white-space:nowrap">Exit ⇥</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="adz" v-if="settings.ads&&settings.ads.header" v-html="settings.ads.header"></div>
+
+  <main class="wrap">
+
+    <!-- DOWNLOAD PAGE -->
+    <div v-if="page==='home'">
+      <div class="sh"><h2>Video <em>Downloader</em></h2></div>
+      <div class="adz" v-if="settings.ads&&settings.ads.sidebar_left" v-html="settings.ads.sidebar_left"></div>
+      <div class="card" style="margin-bottom:1.1rem">
+        <div class="url-row">
+          <input v-model="videoUrl" placeholder="Paste video URL (YouTube, TikTok, Twitter…)" @keydown.enter="fetchInfo"/>
+          <button class="bp" @click="fetchInfo" :disabled="infoLoading">
+            <span v-if="infoLoading" class="spin"></span>
+            <span v-else>Analyze</span>
+          </button>
+        </div>
+        <div v-if="infoErr" style="margin-top:.55rem;color:#e74c3c;font-size:.81rem">⚠ {{infoErr}}</div>
+      </div>
+      <div class="card" v-if="videoInfo">
+        <div class="preview">
+          <div class="thumb" v-if="videoInfo.thumbnail"><img :src="videoInfo.thumbnail"/><span class="dur" v-if="videoInfo.duration">{{fmtDur(videoInfo.duration)}}</span></div>
+          <div class="vinfo">
+            <div class="vtitle">{{videoInfo.title}}</div>
+            <div class="vmeta">{{videoInfo.uploader}}</div>
+            <div class="tabs">
+              <button class="tb" :class="{on:!audioOnly}" @click="audioOnly=false">🎬 Video</button>
+              <button class="tb" :class="{on:audioOnly}" @click="audioOnly=true">🎵 Audio MP3</button>
+            </div>
+            <div v-if="!audioOnly">
+              <div style="font-size:.77rem;color:var(--tx2);margin-bottom:.38rem">Select format:</div>
+              <div class="fgrid">
+                <div class="fi" :class="{sel:selFmt===f.id}" v-for="f in videoFmts" :key="f.id" @click="selFmt=f.id">
+                  <div class="fres">{{f.resolution}}</div>
+                  <div class="fext">{{f.ext}}{{f.filesize?' · '+fmtSize(f.filesize):''}}</div>
+                </div>
+                <div class="fi" :class="{sel:selFmt==='best'}" @click="selFmt='best'">
+                  <div class="fres">Best</div><div class="fext">auto</div>
+                </div>
+              </div>
+            </div>
+            <div v-else style="color:var(--tx2);font-size:.86rem;padding:.38rem 0">Will extract best quality MP3</div>
+            <button class="bp" style="margin-top:.55rem" @click="startDl" :disabled="dlLoading">
+              <span v-if="dlLoading" class="spin"></span>
+              <span v-else>⬇ Download</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card" v-if="activeTask" style="margin-top:1.1rem">
+        <div class="sh" style="margin-bottom:.65rem"><h2>Download <em>Progress</em></h2><span class="badge" :class="taskBadge">{{activeTask.status}}</span></div>
+        <div class="prog-outer"><div class="prog-inner" :style="{width:activeTask.progress+'%'}"></div></div>
+        <div class="prog-lbl"><span>{{activeTask.progress}}%</span><span v-if="activeTask.speed">{{fmtSpeed(activeTask.speed)}}</span><span v-if="activeTask.eta&&activeTask.status==='downloading'">ETA {{activeTask.eta}}s</span></div>
+        <div v-if="activeTask.status==='done'" style="margin-top:.8rem;display:flex;gap:.6rem;align-items:center"><span style="color:#27ae60">✓ Download complete!</span><button class="bg bsm" @click="goTo('files')">View Files →</button></div>
+        <div v-if="activeTask.status==='error'" style="margin-top:.6rem;color:#e74c3c;font-size:.81rem">{{activeTask.error}}</div>
+      </div>
+      <div class="adz" v-if="settings.ads&&settings.ads.sidebar_right" v-html="settings.ads.sidebar_right"></div>
+    </div>
+
+    <!-- FILES PAGE -->
+    <div v-if="page==='files'">
+      <div class="sh">
+        <h2>Downloaded <em>Files</em> <em style="font-size:.9rem">({{files.length}})</em></h2>
+        <div style="display:flex;gap:.45rem">
+          <button class="bg bsm" @click="loadFiles">↻ Refresh</button>
+          <button class="bd bsm" v-if="files.length&&isAdmin" @click="clearAll">Clear All</button>
+        </div>
+      </div>
+      <div class="card" v-if="files.length">
+        <table class="ftbl">
+          <thead><tr><th>Filename</th><th>Size</th><th>Date</th><th></th></tr></thead>
+          <tbody>
+            <tr v-for="f in files" :key="f.name">
+              <td><span class="fname">{{f.name}}</span></td>
+              <td class="fsz">{{fmtSize(f.size)}}</td>
+              <td style="color:var(--tx2);font-size:.76rem;white-space:nowrap">{{fmtDate(f.mtime)}}</td>
+              <td><div class="fact">
+                <a :href="'/api/files/download/'+encodeURIComponent(f.name)" class="bg bsm" style="display:inline-flex;border:1px solid var(--brd);border-radius:7px;padding:.28rem .58rem;font-size:.75rem;color:var(--a)">⬇</a>
+                <button class="bd bsm" v-if="isAdmin" @click="deleteFile(f.name)">✕</button>
+              </div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="empty" v-else><div class="empty-ico">📂</div><div>No downloaded files yet.</div></div>
+    </div>
+
+    <!-- ADMIN PAGE -->
+    <div v-if="page==='admin'">
+      <div class="sh"><h2>Admin <em>Panel</em></h2></div>
+      <div class="agrid">
+        <div class="card anav" style="padding:.9rem">
+          <button class="anb" :class="{on:atab==='logo'}" @click="atab='logo'">🎨 Logo & Branding</button>
+          <button class="anb" :class="{on:atab==='links'}" @click="atab='links'">🔗 Friendly Links</button>
+          <button class="anb" :class="{on:atab==='cookies'}" @click="atab='cookies'">🍪 YouTube Cookies</button>
+          <button class="anb" :class="{on:atab==='ads'}" @click="atab='ads'">📢 Ad Zones</button>
+          <button class="anb" :class="{on:atab==='files2'}" @click="atab='files2';loadFiles()">📁 File Manager</button>
+          <button class="anb" :class="{on:atab==='pw'}" @click="atab='pw'">🔑 Change Password</button>
+        </div>
+        <div>
+          <!-- LOGO -->
+          <div class="card apanel" :class="{on:atab==='logo'}">
+            <div class="stitle">🎨 Logo & Branding</div>
+            <div class="frow"><label class="flbl">Site Title</label><input v-model="as.site_title"/></div>
+            <div class="frow"><label class="flbl">Logo Type</label>
+              <div class="rgroup">
+                <label><input type="radio" v-model="as.logo_type" value="gradient_text"/> Gradient Text</label>
+                <label><input type="radio" v-model="as.logo_type" value="image"/> Image URL</label>
+              </div>
+            </div>
+            <template v-if="as.logo_type==='gradient_text'">
+              <div class="frow"><label class="flbl">Logo Text</label><input v-model="as.logo_text"/></div>
+              <div class="frow"><label class="flbl">Gradient CSS</label><input v-model="as.logo_gradient" placeholder="linear-gradient(135deg,#f5a623,#f7c26b)"/><div class="fhint">Any valid CSS gradient</div><div class="grad-prev" :style="{background:as.logo_gradient}"></div></div>
+            </template>
+            <template v-if="as.logo_type==='image'">
+              <div class="frow"><label class="flbl">Image URL</label><input v-model="as.logo_url" placeholder="https://..."/></div>
+              <img :src="as.logo_url" v-if="as.logo_url" style="max-height:50px;margin-top:.4rem;object-fit:contain"/>
+            </template>
+            <button class="bp" @click="saveSettings">Save</button>
+          </div>
+          <!-- LINKS -->
+          <div class="card apanel" :class="{on:atab==='links'}">
+            <div class="stitle">🔗 Friendly Links</div>
+            <div v-for="(l,i) in as.links" :key="i" class="link-row">
+              <input v-model="l.name" placeholder="Name" style="max-width:138px"/>
+              <input v-model="l.url" placeholder="https://"/>
+              <button class="bd bsm" @click="as.links.splice(i,1)">✕</button>
+            </div>
+            <button class="bg bsm" style="margin-top:.5rem" @click="as.links.push({name:'',url:''})">+ Add Link</button>
+            <div style="margin-top:1.1rem"><button class="bp" @click="saveSettings">Save</button></div>
+          </div>
+          <!-- COOKIES -->
+          <div class="card apanel" :class="{on:atab==='cookies'}">
+            <div class="stitle">🍪 YouTube Cookies</div>
+            <div class="frow"><label class="ckrow"><input type="checkbox" v-model="as.use_cookies"/> Enable YouTube Cookies</label></div>
+            <div class="frow">
+              <label class="flbl">Cookie File Content</label>
+              <textarea v-model="cookieText" rows="11" style="font-family:monospace;font-size:.77rem" placeholder="Paste cookies.txt content…"></textarea>
+              <div class="fhint">Use "Get cookies.txt LOCALLY" browser extension</div>
+            </div>
+            <div style="display:flex;gap:.6rem">
+              <button class="bp" @click="saveCookies">Save Cookies</button>
+              <button class="bg" @click="saveSettings">Save Settings</button>
+            </div>
+          </div>
+          <!-- ADS -->
+          <div class="card apanel" :class="{on:atab==='ads'}">
+            <div class="stitle">📢 Ad Zones</div>
+            <div class="frow"><label class="flbl">📌 Header Ad</label><textarea v-model="as.ads.header" rows="3" placeholder="HTML / AdSense…"></textarea></div>
+            <div class="frow"><label class="flbl">📌 Footer Ad</label><textarea v-model="as.ads.footer" rows="3" placeholder="HTML…"></textarea></div>
+            <div class="frow"><label class="flbl">📌 Left Sidebar Ad</label><textarea v-model="as.ads.sidebar_left" rows="3" placeholder="HTML…"></textarea></div>
+            <div class="frow"><label class="flbl">📌 Right Sidebar Ad</label><textarea v-model="as.ads.sidebar_right" rows="3" placeholder="HTML…"></textarea></div>
+            <button class="bp" @click="saveSettings">Save</button>
+          </div>
+          <!-- FILE MANAGER -->
+          <div class="apanel" :class="{on:atab==='files2'}">
+            <div class="sh"><h2>File <em>Manager</em></h2><div style="display:flex;gap:.45rem"><button class="bg bsm" @click="loadFiles">↻</button><button class="bd bsm" v-if="files.length" @click="clearAll">Clear All</button></div></div>
+            <div class="card" v-if="files.length">
+              <table class="ftbl"><thead><tr><th>Filename</th><th>Size</th><th>Date</th><th></th></tr></thead>
+                <tbody>
+                  <tr v-for="f in files" :key="f.name">
+                    <td><span class="fname">{{f.name}}</span></td><td class="fsz">{{fmtSize(f.size)}}</td>
+                    <td style="color:var(--tx2);font-size:.76rem;white-space:nowrap">{{fmtDate(f.mtime)}}</td>
+                    <td><div class="fact"><a :href="'/api/files/download/'+encodeURIComponent(f.name)" class="bg bsm" style="display:inline-flex;border:1px solid var(--brd);border-radius:7px;padding:.28rem .58rem;font-size:.75rem;color:var(--a)">⬇</a><button class="bd bsm" @click="deleteFile(f.name)">✕</button></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="empty" v-else><div class="empty-ico">📂</div><div>No files.</div></div>
+          </div>
+          <!-- CHANGE PASSWORD -->
+          <div class="card apanel" :class="{on:atab==='pw'}">
+            <div class="stitle">🔑 Change Password</div>
+            <div class="frow"><label class="flbl">Current Password</label><div class="pw-wrap"><input :type="showOld?'text':'password'" v-model="pwForm.old"/><button class="eye" @click="showOld=!showOld">{{showOld?'🙈':'👁'}}</button></div></div>
+            <div class="frow"><label class="flbl">New Password</label><div class="pw-wrap"><input :type="showNew?'text':'password'" v-model="pwForm.new1"/><button class="eye" @click="showNew=!showNew">{{showNew?'🙈':'👁'}}</button></div></div>
+            <div class="frow"><label class="flbl">Confirm New Password</label><div class="pw-wrap"><input :type="showNew?'text':'password'" v-model="pwForm.new2"/><button class="eye" @click="showNew=!showNew">{{showNew?'🙈':'👁'}}</button></div></div>
+            <div v-if="pwErr" style="color:#e74c3c;font-size:.8rem;margin-bottom:.75rem">{{pwErr}}</div>
+            <button class="bp" @click="changePw" :disabled="pwLoading">
+              <span v-if="pwLoading" class="spin"></span>
+              <span v-else>Update Password</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="adz" v-if="settings.ads&&settings.ads.footer" v-html="settings.ads.footer"></div>
+  <footer class="ftr">
+    <div class="ftr-in">
+      <div class="ftr-links"><a v-for="l in settings.links" :href="l.url" target="_blank">{{l.name}}</a></div>
+      <div class="ftr-copy">{{settings.site_title||'YTVD'}} · Powered by yt-dlp</div>
+    </div>
+  </footer>
+  <div class="toast" :class="{show:toastShow}">{{toastMsg}}</div>
+</div>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+const{createApp,ref,computed,onMounted,watch}=Vue;
+createApp({setup(){
+const page=ref('home'),lang=ref(localStorage.getItem('lang')||'en');
+const currentTheme=ref(localStorage.getItem('theme')||'dark');
+const isAdmin=ref(false),showLogin=ref(false),loginPw=ref(''),loginErr=ref(''),loginLoading=ref(false),showPw=ref(false);
+const videoUrl=ref(''),videoInfo=ref(null),infoLoading=ref(false),infoErr=ref(''),selFmt=ref('best'),audioOnly=ref(false),dlLoading=ref(false),activeTask=ref(null);
+let pollTimer=null;
+const files=ref([]),atab=ref('logo');
+const settings=ref({links:[],ads:{header:'',footer:'',sidebar_left:'',sidebar_right:''},logo_type:'gradient_text',logo_text:'YTVD',logo_gradient:'linear-gradient(135deg,#f5a623,#f7c26b)',logo_url:'',use_cookies:false,site_title:'YTVD'});
+const as=ref(JSON.parse(JSON.stringify(settings.value)));
+const cookieText=ref(''),pwForm=ref({old:'',new1:'',new2:''}),pwErr=ref(''),pwLoading=ref(false),showOld=ref(false),showNew=ref(false);
+const toastShow=ref(false),toastMsg=ref('');let toastTimer;
+const videoFmts=computed(()=>(videoInfo.value?.formats||[]).filter(f=>f.vcodec&&f.vcodec!=='none'));
+const taskBadge=computed(()=>{const s=activeTask.value?.status;return s==='done'?'b-done':s==='error'?'b-err':'b-dl';});
+watch(lang,v=>localStorage.setItem('lang',v));
+function toggleTheme(){const t=currentTheme.value==='dark'?'light':'dark';currentTheme.value=t;document.body.setAttribute('data-theme',t);localStorage.setItem('theme',t);}
+async function checkAuth(){const r=await fetch('/api/auth/check');const d=await r.json();isAdmin.value=d.ok;}
+async function doLogin(){loginErr.value='';loginLoading.value=true;try{const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:loginPw.value})});const d=await r.json();if(d.ok){isAdmin.value=true;showLogin.value=false;loginPw.value='';loadAdminData();}else{loginErr.value=d.error||'Wrong password';}}catch(e){loginErr.value=String(e);}loginLoading.value=false;}
+async function doLogout(){await fetch('/api/auth/logout',{method:'POST'});isAdmin.value=false;page.value='home';}
+function goTo(p){if(p==='admin'&&!isAdmin.value){showLogin.value=true;return;}page.value=p;if(p==='files')loadFiles();if(p==='admin')loadAdminData();}
+async function fetchInfo(){infoErr.value='';videoInfo.value=null;if(!videoUrl.value.trim())return;infoLoading.value=true;try{const r=await fetch('/api/info',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:videoUrl.value.trim()})});const d=await r.json();if(d.error)infoErr.value=d.error;else{videoInfo.value=d;selFmt.value='best';}}catch(e){infoErr.value=String(e);}infoLoading.value=false;}
+async function startDl(){dlLoading.value=true;activeTask.value=null;try{const r=await fetch('/api/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:videoUrl.value.trim(),format_id:audioOnly.value?'':selFmt.value,audio_only:audioOnly.value})});const d=await r.json();if(d.task_id){activeTask.value={status:'pending',progress:0};poll(d.task_id);}}catch(e){toast(String(e));}dlLoading.value=false;}
+function poll(id){if(pollTimer)clearInterval(pollTimer);pollTimer=setInterval(async()=>{try{const r=await fetch('/api/progress/'+id);const d=await r.json();activeTask.value=d;if(d.status==='done'||d.status==='error'){clearInterval(pollTimer);if(d.status==='done')loadFiles();}}catch{clearInterval(pollTimer);}},800);}
+async function loadFiles(){const r=await fetch('/api/files');files.value=await r.json();}
+async function deleteFile(name){const r=await fetch('/api/files/'+encodeURIComponent(name),{method:'DELETE'});const d=await r.json();if(d.error)toast(d.error);else{loadFiles();toast('Deleted');}}
+async function clearAll(){if(!confirm('Clear all downloaded files?'))return;await fetch('/api/files/clear',{method:'DELETE'});loadFiles();toast('Cleared');}
+async function loadAdminData(){const r=await fetch('/api/settings');const s=await r.json();settings.value=s;as.value=JSON.parse(JSON.stringify(s));if(!as.value.ads)as.value.ads={header:'',footer:'',sidebar_left:'',sidebar_right:''};if(!as.value.links)as.value.links=[];const cr=await fetch('/api/cookies');if(cr.ok){const cd=await cr.json();cookieText.value=cd.cookies||'';}}
+async function saveSettings(){const r=await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(as.value)});const d=await r.json();if(d.error){toast('Error: '+d.error);return;}const rs=await fetch('/api/settings');settings.value=await rs.json();toast('Saved ✓');}
+async function saveCookies(){await fetch('/api/cookies',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cookies:cookieText.value})});await saveSettings();toast('Cookies saved ✓');}
+async function changePw(){pwErr.value='';if(pwForm.value.new1!==pwForm.value.new2){pwErr.value='Passwords do not match';return;}if(pwForm.value.new1.length<6){pwErr.value='Minimum 6 characters';return;}pwLoading.value=true;try{const r=await fetch('/api/auth/change_password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({old_password:pwForm.value.old,new_password:pwForm.value.new1})});const d=await r.json();if(d.ok){toast('Password updated ✓');pwForm.value={old:'',new1:'',new2:''};}else{pwErr.value=d.error||'Error';}}catch(e){pwErr.value=String(e);}pwLoading.value=false;}
+function toast(msg,ms=2200){toastMsg.value=msg;toastShow.value=true;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastShow.value=false,ms);}
+function fmtDur(s){return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
+function fmtSize(b){if(!b)return '-';if(b>1e9)return (b/1e9).toFixed(1)+' GB';if(b>1e6)return (b/1e6).toFixed(1)+' MB';return (b/1e3).toFixed(0)+' KB';}
+function fmtSpeed(b){return fmtSize(b)+'/s';}
+function fmtDate(ts){return new Date(ts*1000).toLocaleString();}
+onMounted(()=>{document.body.setAttribute('data-theme',currentTheme.value);fetch('/api/settings').then(r=>r.json()).then(s=>settings.value=s);checkAuth();});
+return{page,lang,currentTheme,isAdmin,showLogin,loginPw,loginErr,loginLoading,showPw,videoUrl,videoInfo,infoLoading,infoErr,selFmt,audioOnly,dlLoading,activeTask,files,atab,settings,as,cookieText,pwForm,pwErr,pwLoading,showOld,showNew,toastShow,toastMsg,videoFmts,taskBadge,toggleTheme,goTo,doLogin,doLogout,fetchInfo,startDl,loadFiles,deleteFile,clearAll,loadAdminData,saveSettings,saveCookies,changePw,fmtDur,fmtSize,fmtSpeed,fmtDate};
+}}).mount('#app');
+</script>
+</body>
+</html>

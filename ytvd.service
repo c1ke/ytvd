@@ -1,0 +1,12 @@
+[Unit]
+Description=YTVD - YouTube Video Downloader
+After=network.target
+
+[Service]
+WorkingDirectory=/www/wwwroot/your-domain.com
+ExecStart=/www/wwwroot/your-domain.com/venv/bin/python app.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
